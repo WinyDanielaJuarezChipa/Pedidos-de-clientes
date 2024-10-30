@@ -27,7 +27,7 @@ $pedidos = obtenerPedidos();
             </div>
         <?php endif; ?>
 
-        <a href="agregar.php" class="button">Agregar Nueva Pedido</a>
+        <a href="agregar.php" class="button">Agregar Nuevo Pedido</a>
 
         <h2>Lista de Pedidos</h2>
         <table>
