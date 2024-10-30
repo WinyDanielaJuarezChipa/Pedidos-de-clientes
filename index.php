@@ -45,7 +45,12 @@ $pedidos = obtenerPedidos();
                 <td><?php echo htmlspecialchars($pedido['descripcion']); ?></td>
                 <td><?php echo htmlspecialchars($pedido['precio']); ?></td>
                 <td><?php echo formatDate($pedido['fechaEntrega']); ?></td>
-                <td><?php echo $pedido['entregado'] ? 'Sí' : 'No'; ?></td>
+                <td>
+                    <a href="index.php?accion=toggleEntregado&id=<?php echo $pedido['_id']; ?>"
+                       class="button <?php echo $pedido['entregado'] ? 'entregado' : 'no-entregado'; ?>">
+                        <?php echo $pedido['entregado'] ? 'Entregado' : 'No Entregado'; ?>
+                    </a>
+                </td>
                 <td class="actions">
                     <a href="editar.php?id=<?php echo $pedido['_id']; ?>" class="button">Editar</a>
                 <a href="index.php?accion=eliminar&id=<?php echo $pedido['_id']; ?>" class="button" onclick="return confirm('¿Estás seguro de que quieres eliminar este Pedido?');">Eliminar</a>
