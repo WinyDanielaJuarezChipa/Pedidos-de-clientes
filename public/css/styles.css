@@ -19,29 +19,29 @@ h1, h2 {
     color: #333;
 }
 
-form {
-    margin-bottom: 20px;
+a {
+    color: #4CAF50;
+    text-decoration: none;
 }
 
-input[type="text"], textarea, input[type="date"] {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+a:hover {
+    text-decoration: underline;
 }
 
-input[type="submit"], button, .button {
-    background-color: #CD5C5C;
+.button {
+    display: inline-block;
+    background-color: #8b4caf;
     color: white;
     padding: 10px 15px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    text-decoration: none;
 }
 
-input[type="submit"]:hover, button:hover, .button:hover {
-    background-color: #F08080;
+.button:hover {
+    background-color: #5d45a0;
+    text-decoration: none;
 }
 
 table {
@@ -57,7 +57,7 @@ th, td {
 }
 
 th {
-    background-color: #CD5C5C;
+    background-color: #8b4caf;
     color: white;
 }
 
@@ -70,12 +70,40 @@ tr:hover {
     gap: 10px;
 }
 
-#formularioEdicion {
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 5px;
-    margin-top: 20px;
+.success, .error {
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 4px;
 }
+
+.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+input[type="text"], textarea, input[type="date"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+
 
 .logo {
     float: right;
@@ -84,7 +112,7 @@ tr:hover {
 }
 
 .container {
-    border: 4px dotted rgb(241, 105, 123);
+    border: 4px dotted rgb(180, 105, 241);
     border-radius: 15px;
     padding: 22px;
 }
