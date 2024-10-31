@@ -1,11 +1,23 @@
 <?php
     require_once __DIR__ .'/includes/functions.php';
-    $pedidos = obtenerPedidos();
 
-if (isset($_GET['accion']) && $_GET['accion'] === 'eliminar' && isset($_GET['id'])) {
-    $count = eliminarPedido($_GET['id']);
-    $mensaje = $count > 0 ? "Pedido eliminado con éxito." : "No se pudo eliminar el pedido.";
-}
+    if (isset($_GET['accion']) && isset($_GET['id'])) {
+        switch ($_GET['accion']) {
+            case 'eliminar':
+                $count = eliminarPedido($_GET['id']);
+                $mensaje = $count > 0 ? "Pedido eliminado con éxito." : "No se pudo eliminar el Pedido.";
+                break;
+            case 'toggleEntregado':
+                $nuevoEstado = togglePedidoEntregado($_GET['id']);
+                if ($nuevoEstado !== null) {
+                    $mensaje = $nuevoEstado ? "Pedido marcado como entregado." : "Pedido marcado como no entregado.";
+                } else {
+                    $mensaje = "No se pudo cambiar el estado de la pedido.";
+                }
+                break;
+        }
+    }
+
 $pedidos = obtenerPedidos();
 ?>
 
@@ -21,11 +33,6 @@ $pedidos = obtenerPedidos();
     <div class="container">
         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWukjmG2hWz_dq5hbM5phaQ3YgjK0QzL0j9A&s" alt="Tu logo" class="logo">
         <h1>Gestión de Pedidos</h1>
-        <?php if (isset($mensaje)): ?>
-            <div class="<?php echo $count > 0 ? 'success' : 'error'; ?>">
-                <?php echo $mensaje; ?>
-            </div>
-        <?php endif; ?>
 
         <a href="agregar.php" class="button">Agregar Nuevo Pedido</a>
 
