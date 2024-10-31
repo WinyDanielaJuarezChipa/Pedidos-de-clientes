@@ -1,70 +1,70 @@
 <?php
-    require_once __DIR__ .'/includes/functions.php';
+    require_once __DIR__ .'/../config/database.php';
 
-    if (isset($_GET['accion']) && isset($_GET['id'])) {
-        switch ($_GET['accion']) {
-            case 'eliminar':
-                $count = eliminarPedido($_GET['id']);
-                $mensaje = $count > 0 ? "Pedido eliminado con éxito." : "No se pudo eliminar el Pedido.";
-                break;
-            case 'toggleEntregado':
-                $nuevoEstado = togglePedidoEntregado($_GET['id']);
-                if ($nuevoEstado !== null) {
-                    $mensaje = $nuevoEstado ? "Pedido marcado como entregado." : "Pedido marcado como no entregado.";
-                } else {
-                    $mensaje = "No se pudo cambiar el estado de la pedido.";
-                }
-                break;
-        }
+    function sanitizeInput($input) {
+        return htmlspecialchars(strip_tags(trim($input)));
+    }
+    
+    function formatDate($date) {
+        return $date->toDateTime()->format('Y-m-d');
     }
 
-$pedidos = obtenerPedidos();
+    function crearPedido($modelo, $descripcion, $precio, $fechaEntrega,) {
+        global $tasksCollection;
+        $resultado = $tasksCollection->insertOne([
+            'modelo' => sanitizeInput($modelo),
+            'descripcion' => sanitizeInput($descripcion),
+            'precio' => sanitizeInput($precio),
+            'fechaEntrega' => new MongoDB\BSON\UTCDateTime(strtotime($fechaEntrega) * 1000),
+            'entregado' => false
+        ]);
+        return $resultado->getInsertedId();
+    }
+    
+    function obtenerpedidos() {
+        global $tasksCollection;
+        return $tasksCollection->find();
+    }
+    
+    function obtenerPedidoPorId($id) {
+        global $tasksCollection;
+        return $tasksCollection->findOne(['_id' => new MongoDB\BSON\ObjectId($id)]);
+    }
+    
+    function actualizarPedido($id, $modelo, $descripcion, $precio, $fechaEntrega, $entregado) {
+        global $tasksCollection;
+        $resultado = $tasksCollection->updateOne(
+            ['_id' => new MongoDB\BSON\ObjectId($id)],
+            ['$set' => [
+                'modelo' => sanitizeInput($modelo),
+                'descripcion' => sanitizeInput($descripcion),
+                'precio' => sanitizeInput($precio),
+                'fechaEntrega' => new MongoDB\BSON\UTCDateTime(strtotime($fechaEntrega) * 1000),
+                'entregado' => $entregado
+            ]]
+        );
+        return $resultado->getModifiedCount();
+    }
+
+    function eliminarPedido($id) {
+        global $tasksCollection;
+        $resultado = $tasksCollection->deleteOne(['_id' => new MongoDB\BSON\ObjectId($id)]);
+        return $resultado->getDeletedCount();
+    }
+
+    function togglePedidoEntregado($id) {
+        global $tasksCollection;
+        $pedido = $tasksCollection->findOne(['_id' => new MongoDB\BSON\ObjectId($id)]);
+        if ($pedido) {
+            $nuevoEstado = !$pedido['entregado'];
+            $resultado = $tasksCollection->updateOne(
+                ['_id' => new MongoDB\BSON\ObjectId($id)],
+                ['$set' => ['entregado' => $nuevoEstado]]
+            );
+            return $resultado->getModifiedCount() > 0 ? $nuevoEstado : null;
+        }
+        return null;
+    }
+    
+    
 ?>
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Pedidos</title>
-    <link rel="stylesheet" href="public/css/styles.css">
-</head>
-<body>
-    <div class="container">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWukjmG2hWz_dq5hbM5phaQ3YgjK0QzL0j9A&s" alt="Tu logo" class="logo">
-        <h1>Gestión de Pedidos</h1>
-
-        <a href="agregar.php" class="button">Agregar Nuevo Pedido</a>
-
-        <h2>Lista de Pedidos</h2>
-        <table>
-            <tr>
-                <th>Modelo</th>
-                <th>Descripción</th>
-                <th>Precio</th>
-                <th>Fecha de Entrega</th>
-                <th>Entregado</th>
-                <th>Acciones</th>
-            </tr>
-            <?php foreach ($pedidos as $pedido): ?>
-            <tr>
-                <td><?php echo htmlspecialchars($pedido['modelo']); ?></td>
-                <td><?php echo htmlspecialchars($pedido['descripcion']); ?></td>
-                <td><?php echo htmlspecialchars($pedido['precio']); ?></td>
-                <td><?php echo formatDate($pedido['fechaEntrega']); ?></td>
-                <td>
-                    <a href="index.php?accion=toggleEntregado&id=<?php echo $pedido['_id']; ?>"
-                       class="button <?php echo $pedido['entregado'] ? 'entregado' : 'no-entregado'; ?>">
-                        <?php echo $pedido['entregado'] ? 'Entregado' : 'No Entregado'; ?>
-                    </a>
-                </td>
-                <td class="actions">
-                    <a href="editar.php?id=<?php echo $pedido['_id']; ?>" class="button">Editar</a>
-                <a href="index.php?accion=eliminar&id=<?php echo $pedido['_id']; ?>" class="button" onclick="return confirm('¿Estás seguro de que quieres eliminar este Pedido?');">Eliminar</a>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </table>
-    </div>
-</body>
-</html>
