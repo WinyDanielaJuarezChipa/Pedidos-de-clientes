@@ -45,6 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <label>Descripción: <textarea name="descripcion" required></textarea></label>
     <label>Precio: <input type="text" name="precio" value=" " required></label>
     <label>Fecha de Entrega: <input type="date" name="fechaEntrega" value="" required></label>
+    <label>Completada: <input type="checkbox" name="completada" <?php echo $pedido['completada'] ? 'checked' : ''; ?>></label><br>
     <input type="submit" value="Actualizar Pedido">
 </form>
 
